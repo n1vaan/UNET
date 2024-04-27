@@ -2,10 +2,10 @@ import os
 import json
 from PIL import Image, ImageDraw, ImageOps
 
-image_directory = '/Users/nivaankaushal/Downloads/TrashApp/TrashAppV2 (2024)/archive/data/'
+image_directory = 'add_path'
 def read_and_copy(image_directory: str, batch:str):
 
-    annotation_file = '/Users/nivaankaushal/Downloads/TrashApp/TrashAppV2 (2024)/archive/data/annotations.json'
+    annotation_file = 'annotations.json'
 
     with open(annotation_file, 'r') as f:
         annotations = json.load(f)
@@ -59,7 +59,7 @@ def read_and_copy(image_directory: str, batch:str):
                 # Use Image.composite to overlay the mask on the image
                 overlaid_image = Image.composite(mask_rgba, original_image, mask).convert("RGB")
 
-                output_directory = '/Users/nivaankaushal/Downloads/TrashApp/TrashAppV2 (2024)/masks/' + batch
+                output_directory = '/masks/' + batch
                 os.makedirs(output_directory, exist_ok=True)  
 
                 mask_path = os.path.join(output_directory, f'mask_{base_name}.jpg')
