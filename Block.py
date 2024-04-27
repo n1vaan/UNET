@@ -11,17 +11,21 @@ class Block(nn.Module):
         super().__init__()
         if type == "enc": 
             self.block = nn.Sequential(
-                nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=(3,3)),
+                nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=(3,3), padding=1),
+                nn.BatchNorm2d(out_channels), 
                 nn.ReLU(),
-                nn.Conv2d(in_channels=out_channels, out_channels=out_channels, kernel_size=(3,3)),
+                nn.Conv2d(in_channels=out_channels, out_channels=out_channels, kernel_size=(3,3), padding=1),
+                nn.BatchNorm2d(out_channels), 
                 nn.ReLU()
             )
         else: 
             self.block = nn.Sequential(
-                nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=(3,3)),
+                nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=(3,3), padding=1),
                 nn.ReLU(),
-                nn.Conv2d(in_channels=out_channels, out_channels=out_channels, kernel_size=(3,3)),
+                nn.BatchNorm2d(out_channels), 
+                nn.Conv2d(in_channels=out_channels, out_channels=out_channels, kernel_size=(3,3), padding=1),
                 nn.ReLU(),
+                nn.BatchNorm2d(out_channels), 
                 nn.ConvTranspose2d(in_channels=out_channels, out_channels=out_channels, kernel_size=(2,2),stride=2),
             )
     def forward(self, X):

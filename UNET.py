@@ -23,25 +23,27 @@ class UNET(nn.Module):
         self.dec4 = Block(type="dec", in_channels=384, out_channels=128)
 
         self.exit = nn.Sequential(
-            nn.Conv2d(in_channels=192, out_channels=64, kernel_size=(3,3)),
+            nn.Conv2d(in_channels=192, out_channels=64, kernel_size=(3,3), padding=1),
+            nn.BatchNorm2d(64), 
             nn.ReLU(),
-            nn.Conv2d(in_channels=64, out_channels=64, kernel_size=(3,3)),
+            nn.Conv2d(in_channels=64, out_channels=64, kernel_size=(3,3), padding=1),
+            nn.BatchNorm2d(64), 
             nn.ReLU(),
             nn.Conv2d(in_channels=64, out_channels=out_channels, kernel_size=(1,1))
         )
     
     def concatenate(self, enc, dec):
 
-        enc_shape = enc.shape[1:]
-        dec_shape = dec.shape[1:]
-
-        crop_h = (enc_shape[0] - dec_shape[0]) // 2
-        crop_w = (enc_shape[1] - dec_shape[1]) // 2
+        enc_shape = enc.shape
+        dec_shape = dec.shape
         
-        enc_cropped = enc[:, crop_h:crop_h + dec_shape[0], crop_w:crop_w + dec_shape[1]]
+        crop_h = (enc_shape[2] - dec_shape[2]) // 2
+        crop_w = (enc_shape[3] - dec_shape[3]) // 2
         
-        return torch.cat([enc_cropped, dec], dim=0)
-    
+        enc_cropped = enc[:, :, crop_h:crop_h + dec_shape[2], crop_w:crop_w + dec_shape[3]]
+        
+        return torch.cat([enc_cropped, dec], dim=1)
+        
 
     def forward(self, X):
 
@@ -49,6 +51,7 @@ class UNET(nn.Module):
         enc2 = self.enc2(F.max_pool2d(enc1, 2))
         enc3 = self.enc3(F.max_pool2d(enc2, 2))
         enc4 = self.enc4(F.max_pool2d(enc3, 2))
+
 
         res1 = self.dec1(F.max_pool2d(enc4, 2))
         res1 = self.concatenate(enc4, res1)
